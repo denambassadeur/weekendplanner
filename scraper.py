@@ -65,7 +65,7 @@ if __name__ == "__main__":
     try:
         prompt_data = "\n".join(found_products) if found_products else "Geen specifieke data"
         response = client.models.generate_content(
-            model="gemini-2.0-flash", 
+            model="gemini-2.5-flash", 
             contents=f"Lidl Producten:\n{prompt_data}\n\nMaak mijn weekendplan.",
             config={'system_instruction': INSTRUCTIES}
         )
