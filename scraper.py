@@ -33,33 +33,37 @@ HEADERS = {
 
 # --- 2. DE "ALLESVANGER" SCRAPER ---
 
-def scrape_lidl_flexible(url):
-    if not url: return []
-    print(f"Poging tot scrapen: {url}")
-    found_items = []
+def scrape_lidl_api(url):
+    print("Op zoek naar de verborgen productlijst...")
+    # We proberen de API-headers na te bootsen die de website gebruikt
+    api_headers = {
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/json",
+        "x-requested-with": "XMLHttpRequest"
+    }
+    
     try:
+        # We zoeken in de tekst naar de specifieke API-endpoint 
+        # of we proberen de meest voorkomende datastructuur van Lidl
         r = requests.get(url, headers=HEADERS, timeout=15)
-        html = r.text
-        soup = BeautifulSoup(html, 'html.parser')
         
-        # Methode 1: Zoek naar tekst die tussen aanhalingstekens staat bij "fullTitle" of "name"
-        # Dit haalt data uit de verborgen Javascript objecten
-        matches = re.findall(r'"fullTitle":"([^"]+)"', html)
-        found_items.extend(matches)
+        # We zoeken naar een groot blok JSON-data dat vaak in de broncode staat
+        # bij moderne websites (de 'Initial State')
+        json_data = re.search(r'window\.__INITIAL_STATE__\s*=\s*({.*?});', r.text)
         
-        # Methode 2: Zoek naar de bekende Lidl grid-titels
-        for el in soup.select('h3, h2, .ret-o-card__headline'):
-            text = el.get_text(strip=True)
-            if 5 < len(text) < 40:
-                found_items.append(text)
-
-        # Opschonen van de lijst
-        cleaned = list(set([i for i in found_items if len(i) > 3 and "Lidl" not in i]))
-        return cleaned
-    except Exception as e:
-        print(f"Scrape fout: {e}")
+        if json_data:
+            data = json.loads(json_data.group(1))
+            # Hier moeten we diep graven in de mappen van de data
+            # Dit is een voorbeeld, de exacte 'paden' kunnen variëren
+            products = []
+            # We zoeken recursief naar 'fullTitle' in de hele hoop data
+            titles = re.findall(r'"fullTitle":"([^"]+)"', r.text)
+            return list(set([t for t in titles if len(t) > 3]))
+            
         return []
-
+    except Exception as e:
+        print(f"API Scrape fout: {e}")
+        return []
 def get_links():
     try:
         r = requests.get("https://www.lidl.be/c/nl-BE/aanbiedingen/s10006730", headers=HEADERS, timeout=15)
