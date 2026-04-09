@@ -53,16 +53,53 @@ def scrape_products(url):
     try:
         r = requests.get(url, headers=HEADERS, timeout=15)
         soup = BeautifulSoup(r.text, 'html.parser')
-        for header in soup.find_all(['h2', 'h3']):
-            text = header.get_text(strip=True)
-            if len(text) > 4:
-                items.append(text)
-        return "\n".join(set(items))
-    except:
+        
+        # Lidl specifieke selectors (deze veranderen zelden)
+        # We zoeken naar de titels in de product-grids
+        selectors = [
+            'h3.ret-o-card__headline',      # Nieuwe stijl titels
+            'span.ret-o-product-tile__title', # Alternatieve titels
+            'div.product-grid-box-tile__title', # Oude stijl titels
+            '.n-grid-box__title',           # Grid titels
+            'h3'                             # Algemene backup
+        ]
+        
+        for selector in selectors:
+            found = soup.select(selector)
+            for item in found:
+                text = item.get_text(strip=True)
+                if len(text) > 3 and "Vind een filiaal" not in text:
+                    items.append(text)
+        
+        # Als we nog steeds niets hebben, proberen we een hele brede zoekopdracht
+        if not items:
+            for card in soup.find_all(['article', 'div'], class_=lambda x: x and 'product' in x):
+                title = card.find(['h2', 'h3', 'span'])
+                if title:
+                    items.append(title.get_text(strip=True))
+
+        unique_items = list(set(items))
+        print(f"Echte producten gevonden: {len(unique_items)}")
+        return "\n".join(unique_items)
+    except Exception as e:
+        print(f"Fout tijdens diepe scrape: {e}")
         return ""
 
 def ask_gemini(promo_data):
     print("Gemini aanroepen...")
+    prompt_opdracht = f"""
+    Hieronder volgt een ruwe lijst van producten uit de Lidl-folder van deze week:
+    ---
+    {promo_data}
+    ---
+    GEBRUIK DEZE DATA:
+    1. Kies minstens 5 specifieke producten uit de lijst hierboven.
+    2. Verzin hiermee een creatief weekendmenu (lunch + diner).
+    3. Als de lijst kort is, vul dan aan met basisproducten (olie, kruiden, rijst, pasta, aardappelen), maar vermeld de promo-items duidelijk.
+    4. Antwoord direct in HTML-formaat.
+    """
+    
+    # ... rest van je bestaande ask_gemini code met de fallback ...
     try:
         # Hier gebruiken we EXACT dezelfde naam: MIJN_CHEF_INSTRUCTIES
         response = client.models.generate_content(
