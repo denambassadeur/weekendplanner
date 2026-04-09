@@ -48,71 +48,58 @@ def get_links():
 
 def scrape_products(url):
     if not url: return ""
-    print(f"Scrapen van: {url}")
+    print(f"Scherp scrapen van: {url}")
     items = []
     try:
-        # We voegen een kleine pauze toe om minder op een robot te lijken
-        import time
-        time.sleep(2) 
-        
         r = requests.get(url, headers=HEADERS, timeout=15)
         soup = BeautifulSoup(r.text, 'html.parser')
         
-        # We zoeken nu heel breed in alle headers en sterke teksten
-        # Dit zijn meestal de plaatsen waar productnamen staan
-        for element in soup.find_all(['h2', 'h3', 'strong', 'span']):
-            text = element.get_text(strip=True)
-            
-            # Filter: alleen tekst tussen de 5 en 60 tekens (echte productnamen)
-            # En we sluiten woorden uit die zeker geen producten zijn
-            verboden_woorden = ["lidl", "menu", "zoek", "aanmelden", "filiaal", "folder", "service", "cookies", "privacy"]
-            
-            if 5 < len(text) < 60:
-                if not any(word in text.lower() for word in verboden_woorden):
-                    items.append(text)
+        # We zoeken specifiek naar de producttitels van Lidl
+        # Deze zitten vaak in h3 of h2 binnen een 'article' of kaart
+        for card in soup.find_all(['article', 'div'], class_=lambda x: x and ('product' in x or 'card' in x)):
+            title_element = card.find(['h2', 'h3', 'h4'])
+            if title_element:
+                title = title_element.get_text(strip=True)
+                # Filter: we negeren algemene termen en non-food
+                negatievelijst = ['tuin', 'moestuin', 'plant', 'gereedschap', 'lidl', 'folder', 'keuken']
+                if len(title) > 3 and not any(woord in title.lower() for woord in negatievelijst):
+                    items.append(title)
         
-        # Dubbelen verwijderen
         unique_items = list(set(items))
-        print(f"Items gevonden na filtering: {len(unique_items)}")
-        
-        # Voor de zekerheid: print de eerste 3 gevonden items in de logs
+        print(f"Echte ingrediënten gevonden: {len(unique_items)}")
         if unique_items:
-            print(f"Voorbeeld items: {unique_items[:3]}")
-            
+            print(f"Eerste 5 gevonden: {unique_items[:5]}")
         return "\n".join(unique_items)
     except Exception as e:
-        print(f"Scrape fout: {e}")
+        print(f"Fout: {e}")
         return ""
 
 def ask_gemini(promo_data):
-    print("Gemini aanroepen...")
-    prompt_opdracht = f"""
-    Hieronder volgt een ruwe lijst van producten uit de Lidl-folder van deze week:
-    ---
+    print("Gemini wordt streng toegesproken...")
+    prompt = f"""
+    Ik geef je hieronder een lijst met tekst die ik heb gescrapt van de Lidl-website.
+    
+    LIJST:
     {promo_data}
-    ---
-    GEBRUIK DEZE DATA:
-    1. Kies minstens 5 specifieke producten uit de lijst hierboven.
-    2. Verzin hiermee een creatief weekendmenu (lunch + diner).
-    3. Als de lijst kort is, vul dan aan met basisproducten (olie, kruiden, rijst, pasta, aardappelen), maar vermeld de promo-items duidelijk.
-    4. Antwoord direct in HTML-formaat.
+    
+    STRENGE OPDRACHT:
+    1. Scan de lijst en extraheer ALLEEN de eetbare ingrediënten (vlees, vis, groenten, fruit, zuivel).
+    2. Negeer woorden als 'Tuinieren', 'Moestuin' of 'Non-food'.
+    3. Maak een weekendplanning. Gebruik voor ELK gerecht minstens één specifiek product uit de lijst.
+    4. Start je antwoord met een sectie: "Gevonden promoties die ik vandaag gebruik:" en som ze op.
+    5. Werk alles uit in mooie HTML.
     """
     
-    # ... rest van je bestaande ask_gemini code met de fallback ...
     try:
-        # Hier gebruiken we EXACT dezelfde naam: MIJN_CHEF_INSTRUCTIES
+        # Gebruik hier je fallback-systeem van de vorige stap
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=f"Hier zijn de promoties: {promo_data}. Maak mijn plan.",
-            config={
-                'system_instruction': MIJN_CHEF_INSTRUCTIES
-            }
+            model="gemini-2.5-flash", 
+            contents=prompt,
+            config={'system_instruction': MIJN_CHEF_INSTRUCTIES}
         )
         return response.text
     except Exception as e:
-        # Dit vangt fouten op en laat ze zien op je website
-        return f"Fout in ask_gemini functie: {str(e)}"
-
+        return f"Gemini error: {e}"
 # --- 3. UITVOERING ---
 
 if __name__ == "__main__":
