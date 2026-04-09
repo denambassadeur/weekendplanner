@@ -93,7 +93,7 @@ if __name__ == "__main__":
     prompt_data = "\n".join(all_products) if all_products else "GEEN DATA GEVONDEN (Gebruik seizoensproducten april)"
     
     response = client.models.generate_content(
-        model="gemini-2.0-flash", 
+        model="gemini-2.5-flash", 
         contents=f"Producten gevonden: {prompt_data}\n\nMaak mijn weekendplan.",
         config={'system_instruction': INSTRUCTIES}
     )
