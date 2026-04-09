@@ -71,7 +71,7 @@ def ask_gemini(data_list):
     
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash", 
+            model="gemini-2.5-flash", 
             contents=prompt,
             config={'system_instruction': INSTRUCTIES}
         )
