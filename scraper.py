@@ -1,7 +1,7 @@
 import os
 import requests
 from bs4 import BeautifulSoup
-import google.genai as genai # Aangepaste import voor 2026
+import google.genai as genai
 from datetime import datetime
 
 # --- CONFIGURATIE ---
@@ -40,9 +40,12 @@ Algemene Toon:
 
 # 2. Gemini API Setup
 API_KEY = os.environ.get("GEMINI_API_KEY")
-
-# Initialiseer de client op de nieuwe 2026 manier
 client = genai.Client(api_key=API_KEY)
+
+# Belangrijk: Headers toevoegen zodat we niet geblokkeerd worden
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+}
 
 BASE_URL = "https://www.lidl.be"
 OFFERS_URL = "https://www.lidl.be/c/nl-BE/aanbiedingen/s10006730"
@@ -50,7 +53,7 @@ OFFERS_URL = "https://www.lidl.be/c/nl-BE/aanbiedingen/s10006730"
 def get_links():
     print("Zoeken naar Lidl links...")
     try:
-        r = requests.get(OFFERS_URL, timeout=10)
+        r = requests.get(OFFERS_URL, headers=HEADERS, timeout=15)
         soup = BeautifulSoup(r.text, 'html.parser')
         links = {"week": None, "weekend": None}
         for a in soup.find_all('a', href=True):
@@ -59,6 +62,7 @@ def get_links():
                 links["week"] = BASE_URL + h if h.startswith('/') else h
             if "weekenddeals" in h and not links["weekend"]:
                 links["weekend"] = BASE_URL + h if h.startswith('/') else h
+        print(f"Links gevonden: {links}")
         return links
     except Exception as e:
         print(f"Link fout: {e}")
@@ -66,58 +70,80 @@ def get_links():
 
 def scrape_products(url):
     if not url: return ""
-    print(f"Scrapen: {url}")
+    print(f"Scrapen van: {url}")
     try:
-        r = requests.get(url, timeout=10)
+        r = requests.get(url, headers=HEADERS, timeout=15)
         soup = BeautifulSoup(r.text, 'html.parser')
-        # We halen alle koppen (h3) op, dat zijn meestal de producten
-        items = [i.get_text(strip=True) for i in soup.find_all('h3')]
-        return "\n".join(set(items))
-    except:
+        
+        # Lidl gebruikt vaak specifieke classes voor titels
+        # We zoeken nu op meerdere mogelijke manieren
+        items = []
+        
+        # Manier 1: Zoek op h2 en h3 (vaak gebruikt voor titels)
+        for header in soup.find_all(['h2', 'h3']):
+            text = header.get_text(strip=True)
+            if len(text) > 5: # Filter korte ruis
+                items.append(text)
+        
+        # Manier 2: Zoek op 'article' tags (kaarten)
+        for article in soup.find_all('article'):
+            text = article.get_text(strip=True)
+            # Pak de eerste regel of een deel van de tekst
+            first_line = text.split('\n')[0]
+            if len(first_line) > 5:
+                items.append(first_line)
+
+        # Dubbelen verwijderen
+        unique_items = list(set(items))
+        print(f"Aantal producten gevonden op deze pagina: {len(unique_items)}")
+        return "\n".join(unique_items)
+    except Exception as e:
+        print(f"Scrape fout: {e}")
         return ""
 
 def ask_gemini(promo_data):
     print("Gemini aan het werk zetten...")
-    # De nieuwe 2026 syntax voor de client
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=f"Promoties: {promo_data}. Maak mijn plan.",
-        config=genai.types.GenerateContentConfig(
-            system_instruction=SYSTEM_PROMPT
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=f"Hier zijn de promoties van deze week: {promo_data}. Maak op basis hiervan mijn weekendplan met recepten.",
+            config=genai.types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT
+            )
         )
-    )
-    return response.text
+        return response.text
+    except Exception as e:
+        return f"Fout bij aanroepen Gemini: {e}"
 
 if __name__ == "__main__":
-    # 1. Links halen
     urls = get_links()
     
-    # 2. Producten verzamelen
     data = ""
-    if urls.get("week"): data += scrape_products(urls["week"])
-    if urls.get("weekend"): data += scrape_products(urls["weekend"])
+    data += scrape_products(urls.get("week"))
+    data += "\n"
+    data += scrape_products(urls.get("weekend"))
     
-    # 3. Plan maken
-    if data:
+    # We sturen alleen data naar Gemini als we echt iets gevonden hebben
+    if len(data.strip()) > 50: # Check of we genoeg tekst hebben
         inhoud = ask_gemini(data)
     else:
-        inhoud = "Kon geen promoties ophalen. Controleer de Lidl website."
+        print("WAARSCHUWING: Geen productdata gevonden!")
+        inhoud = "Kon geen promoties ophalen. Waarschijnlijk blokkeert de website tijdelijk de toegang. Probeer het over een uur nog eens."
 
-    # 4. HTML maken
     nu = datetime.now().strftime("%d-%m-%Y %H:%M")
     html = f"""
     <html>
     <head><title>Weekend Planner</title></head>
-    <body style="font-family:sans-serif; max-width:800px; margin:auto; padding:20px;">
+    <body style="font-family:sans-serif; max-width:800px; margin:auto; padding:20px; line-height: 1.6;">
         <h1>Mijn Weekend Planner</h1>
-        <div style="border:1px solid #ccc; padding:20px; border-radius:10px;">
+        <div style="border:1px solid #ccc; padding:20px; border-radius:10px; background-color: #f9f9f9;">
             {inhoud}
         </div>
-        <p><small>Update: {nu}</small></p>
+        <p><small>Update: {nu} (Belgische tijd)</small></p>
     </body>
     </html>
     """
     
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html)
-    print("Klaar! index.html is bijgewerkt.")
+    print("Klaar!")
