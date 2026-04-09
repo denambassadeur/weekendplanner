@@ -51,38 +51,37 @@ def scrape_products(url):
     print(f"Scrapen van: {url}")
     items = []
     try:
+        # We voegen een kleine pauze toe om minder op een robot te lijken
+        import time
+        time.sleep(2) 
+        
         r = requests.get(url, headers=HEADERS, timeout=15)
         soup = BeautifulSoup(r.text, 'html.parser')
         
-        # Lidl specifieke selectors (deze veranderen zelden)
-        # We zoeken naar de titels in de product-grids
-        selectors = [
-            'h3.ret-o-card__headline',      # Nieuwe stijl titels
-            'span.ret-o-product-tile__title', # Alternatieve titels
-            'div.product-grid-box-tile__title', # Oude stijl titels
-            '.n-grid-box__title',           # Grid titels
-            'h3'                             # Algemene backup
-        ]
-        
-        for selector in selectors:
-            found = soup.select(selector)
-            for item in found:
-                text = item.get_text(strip=True)
-                if len(text) > 3 and "Vind een filiaal" not in text:
+        # We zoeken nu heel breed in alle headers en sterke teksten
+        # Dit zijn meestal de plaatsen waar productnamen staan
+        for element in soup.find_all(['h2', 'h3', 'strong', 'span']):
+            text = element.get_text(strip=True)
+            
+            # Filter: alleen tekst tussen de 5 en 60 tekens (echte productnamen)
+            # En we sluiten woorden uit die zeker geen producten zijn
+            verboden_woorden = ["lidl", "menu", "zoek", "aanmelden", "filiaal", "folder", "service", "cookies", "privacy"]
+            
+            if 5 < len(text) < 60:
+                if not any(word in text.lower() for word in verboden_woorden):
                     items.append(text)
         
-        # Als we nog steeds niets hebben, proberen we een hele brede zoekopdracht
-        if not items:
-            for card in soup.find_all(['article', 'div'], class_=lambda x: x and 'product' in x):
-                title = card.find(['h2', 'h3', 'span'])
-                if title:
-                    items.append(title.get_text(strip=True))
-
+        # Dubbelen verwijderen
         unique_items = list(set(items))
-        print(f"Echte producten gevonden: {len(unique_items)}")
+        print(f"Items gevonden na filtering: {len(unique_items)}")
+        
+        # Voor de zekerheid: print de eerste 3 gevonden items in de logs
+        if unique_items:
+            print(f"Voorbeeld items: {unique_items[:3]}")
+            
         return "\n".join(unique_items)
     except Exception as e:
-        print(f"Fout tijdens diepe scrape: {e}")
+        print(f"Scrape fout: {e}")
         return ""
 
 def ask_gemini(promo_data):
