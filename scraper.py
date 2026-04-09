@@ -1,10 +1,3 @@
-Dat is mijn fout! Een klassieke "type-mismatch". In de vorige versie gaf de functie een lege string ("") terug als er geen link was, maar een lijst ([]) als er wel een link was. Je kunt in Python geen lijst en een tekstbericht bij elkaar optellen.
-
-Hier is de gecorrigeerde versie van scraper.py. Ik heb de fout opgelost en de "DEBUG"-sectie nog wat duidelijker gemaakt, zodat we nu écht gaan zien wat Lidl naar onze server stuurt.
-
-De Gecorrigeerde scraper.py
-Python
-
 import os
 import requests
 from bs4 import BeautifulSoup
@@ -16,16 +9,19 @@ INSTRUCTIES = """
 Jij bent mijn persoonlijke chef. 
 Scan de lijst met woorden die ik je geef. 
 Als je eten of drinken herkent, maak dan een menu. 
-Als je alleen menu-items ziet (zoals 'Jobs', 'Contact', 'Privacy'), 
-leg dan in je output uit dat de scraper waarschijnlijk de verkeerde data ophaalt.
+Als je alleen websitenavigatie ziet (zoals 'Jobs', 'Contact'), 
+leg dan uit dat de scraper waarschijnlijk de verkeerde data ophaalt.
 Antwoord in HTML.
 """
 
 API_KEY = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=API_KEY)
 
+# Extra uitgebreide headers om Lidl te overtuigen dat we een echte browser zijn
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Accept-Language": "nl-BE,nl;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Referer": "https://www.google.com/"
 }
 
 # --- 2. FUNCTIES ---
@@ -48,7 +44,6 @@ def get_links():
         return {"week": None, "weekend": None}
 
 def scrape_products(url):
-    # CRUCIALE FIX: Altijd een LIJST teruggeven, nooit een string
     if not url: 
         return []
     
@@ -57,29 +52,21 @@ def scrape_products(url):
     try:
         r = requests.get(url, headers=HEADERS, timeout=15)
         soup = BeautifulSoup(r.text, 'html.parser')
-        # We pakken alle koppen en sterke teksten
+        # We pakken alle koppen, sterke teksten en specifieke product-tags
         for tag in soup.find_all(['h2', 'h3', 'strong', 'span']):
             text = tag.get_text(strip=True)
             if 4 < len(text) < 50:
                 items.append(text)
         return list(set(items))
     except Exception as e:
-        print(f"Fout tijdens scrapen van {url}: {e}")
+        print(f"Fout tijdens scrapen: {e}")
         return []
 
 def ask_gemini(data_list):
     print("Gemini analyseert de data...")
-    # Pak de eerste 100 unieke woorden
     raw_text = "\n".join(data_list[:100])
     
-    prompt = f"""
-    Hier is de ruwe data van de Lidl website:
-    {raw_text}
-
-    OPDRACHT:
-    1. Maak een weekendplanning als je ingrediënten vindt.
-    2. Als je alleen websitenavigatie ziet, rapporteer dit dan.
-    """
+    prompt = f"Data van Lidl website:\n{raw_text}\n\nOPDRACHT: Maak een weekendplanning met recepten als je eten vindt. Zo niet, rapporteer wat je wel ziet."
     
     try:
         response = client.models.generate_content(
@@ -96,26 +83,24 @@ def ask_gemini(data_list):
 if __name__ == "__main__":
     urls = get_links()
     
-    # We halen de lijsten op
     items_week = scrape_products(urls.get("week"))
     items_weekend = scrape_products(urls.get("weekend"))
     
-    # Nu kunnen we ze veilig samenvoegen (lijst + lijst)
     totaal_items = items_week + items_weekend
     
-    # DEBUG OUTPUT voor in GitHub Actions logs
+    # DEBUG OUTPUT voor de GitHub logs
     print(f"--- DEBUG INFO ---")
     print(f"Aantal items gevonden: {len(totaal_items)}")
     if totaal_items:
         print(f"Eerste 20 items: {totaal_items[:20]}")
     else:
-        print("WAARSCHUWING: Helemaal geen tekst gevonden!")
+        print("WAARSCHUWING: Geen tekst gevonden!")
     print(f"------------------")
 
     if len(totaal_items) > 5:
         inhoud = ask_gemini(totaal_items)
     else:
-        inhoud = "De scraper kon geen informatie vinden op de pagina. Lidl blokkeert mogelijk de toegang."
+        inhoud = "De scraper kon geen informatie vinden. Lidl blokkeert mogelijk de toegang."
 
     nu = datetime.now().strftime("%d-%m-%Y %H:%M")
     
@@ -140,4 +125,4 @@ if __name__ == "__main__":
     
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_output)
-    print("Proces voltooid.")
+    print("Klaar!")
