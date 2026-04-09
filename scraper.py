@@ -16,59 +16,47 @@ def scrape_lidl_with_browser(url):
     
     products = []
     with sync_playwright() as p:
-        # We gebruiken 'firefox' of 'webkit' als alternatief als chromium te veel op een bot lijkt
         browser = p.chromium.launch(headless=True)
-        context = browser.new_context(
-            viewport={'width': 1280, 'height': 800},
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-        )
+        context = browser.new_context(viewport={'width': 1280, 'height': 1000})
         page = context.new_page()
         
         try:
-            # 1. Ga naar de pagina
+            # 1. Pagina laden
             page.goto(url, wait_until="domcontentloaded", timeout=60000)
-            print("Pagina geladen, op zoek naar de cookie-banner...")
-
-            # 2. Klik op 'Alle cookies accepteren' (Lidl gebruikt vaak OneTrust)
-            # We zoeken naar de knop met de tekst 'Accepteren' of een specifiek ID
-            try:
-                # We wachten max 5 seconden op de cookieknop
-                cookie_button = page.wait_for_selector("#onetrust-accept-btn-handler", timeout=5000)
-                if cookie_button:
-                    cookie_button.click()
-                    print("Cookies geaccepteerd!")
-                    page.wait_for_timeout(2000) # Even wachten tot de banner weg is
-            except:
-                print("Geen standaard cookie-banner gevonden, we gaan door...")
-
-            # 3. Scrollen om 'lazy loading' te activeren
-            for _ in range(5):
-                page.mouse.wheel(0, 1000)
-                page.wait_for_timeout(500)
-
-            # 4. Nu de echte data pakken
-            print("Producten verzamelen...")
-            # We kijken breder naar titels binnen de 'product-grid'
-            content = page.content()
-            soup = BeautifulSoup(content, 'html.parser')
             
-            # We zoeken naar h3's die echt bij een product horen
-            for card in soup.find_all(['article', 'div'], class_=lambda x: x and 'product' in x.lower()):
-                title_el = card.find('h3')
-                if title_el:
-                    title = title_el.get_text(strip=True)
-                    if len(title) > 3 and "Lidl" not in title:
-                        products.append(title)
+            # 2. Cookies accepteren
+            try:
+                page.wait_for_selector("#onetrust-accept-btn-handler", timeout=5000)
+                page.click("#onetrust-accept-btn-handler")
+                print("Cookies geaccepteerd!")
+                page.wait_for_timeout(2000)
+            except:
+                print("Geen cookie-banner gevonden.")
 
-            # Als backup: alle h3's die geen menu-items zijn
-            if not products:
-                for h3 in soup.find_all('h3'):
-                    t = h3.get_text(strip=True)
-                    if len(t) > 5 and t not in ['Cookielijst', 'Social Media', 'Service']:
-                        products.append(t)
+            # 3. Wachten tot de product-grid echt zichtbaar is
+            # We zoeken naar h3-tags die vaak de titels bevatten
+            print("Wachten op product-titels...")
+            page.wait_for_selector("h3", timeout=10000)
+            
+            # 4. Scrollen om alles in te laden
+            page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+            page.wait_for_timeout(2000)
+
+            # 5. Playwright de teksten direct laten ophalen (geen BeautifulSoup nodig)
+            # We pakken ALLE h3 teksten op de pagina
+            raw_titles = page.locator("h3").all_text_contents()
+            
+            for title in raw_titles:
+                t = title.strip()
+                # Filter: Geen menu-items of korte ruis
+                blacklist = ['lidl', 'service', 'account', 'cookies', 'nieuwsbrief', 'folder']
+                if len(t) > 5 and not any(word in t.lower() for word in blacklist):
+                    products.append(t)
+            
+            print(f"Totaal aantal ruwe h3's gevonden: {len(raw_titles)}")
 
         except Exception as e:
-            print(f"Fout: {e}")
+            print(f"Browser fout: {e}")
         
         browser.close()
     
