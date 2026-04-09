@@ -24,11 +24,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests beautifulsoup4 google-genai
 
-    - name: Installeer Playwright Browsers
-      run: |
-        pip install playwright
-        playwright install chromium --with-deps
-
     - name: Draai het Planner Script
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
