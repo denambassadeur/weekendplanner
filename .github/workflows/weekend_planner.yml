@@ -1,0 +1,38 @@
+name: Wekelijkse Weekend Planner
+
+on:
+  schedule:
+    # Dit draait elke donderdag om 08:00 UTC (09:00 of 10:00 Belgische tijd)
+    - cron: '0 8 * * 4'
+  workflow_dispatch: # Hiermee kun je het proces ook handmatig starten
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Stel Python in
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Installeer afhankelijkheden
+      run: |
+        pip install google-generativeai requests beautifulsoup4
+
+    - name: Draai het Planner Script
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        # Voeg hier later je Google Calendar credentials toe
+      run: python scraper.py
+
+    - name: Update de Website (GitHub Pages)
+      run: |
+        git config --global user.name "GitHub Action"
+        git config --global user.email "action@github.com"
+        git add index.html
+        git commit -m "Update weekend planning: $(date)"
+        git push
