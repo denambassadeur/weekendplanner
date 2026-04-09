@@ -16,40 +16,46 @@ def scrape_lidl_with_browser(url):
     
     products = []
     with sync_playwright() as p:
-        # Start een onzichtbare Chrome browser
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+        # We geven de browser een specifieke taal en regio mee
+        context = browser.new_context(locale="nl-BE")
+        page = context.new_page()
         
-        # Ga naar de pagina en wacht tot hij geladen is
-        page.goto(url, wait_until="networkidle")
-        
-        # Scroll een paar keer naar beneden om 'lazy loading' producten te activeren
-        for _ in range(3):
-            page.mouse.wheel(0, 2000)
-            page.wait_for_timeout(1000)
+        try:
+            # We veranderen 'networkidle' naar 'domcontentloaded' (sneller)
+            # En we verhogen de timeout naar 60 seconden voor de zekerheid
+            page.goto(url, wait_until="domcontentloaded", timeout=60000)
+            
+            # We wachten expliciet 5 seconden extra voor de JavaScript producten
+            print("Pagina geladen, even wachten op de producten...")
+            page.wait_for_timeout(5000)
+            
+            # Scroll omlaag om alles te triggeren
+            page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+            page.wait_for_timeout(2000)
 
-        # Haal de gerenderde HTML op
-        content = page.content()
-        soup = BeautifulSoup(content, 'html.parser')
-        
-        # Zoek naar de echte producttitels
-        # Lidl gebruikt in 2026 vaak deze classes
-        selectors = [
-            'h3.ret-o-card__headline', 
-            '.ret-o-product-tile__title',
-            'h3'
-        ]
-        
-        for selector in selectors:
-            for el in soup.select(selector):
-                text = el.get_text(strip=True)
-                if len(text) > 5 and "Lidl" not in text:
-                    products.append(text)
+            content = page.content()
+            soup = BeautifulSoup(content, 'html.parser')
+            
+            # Dezelfde selectors als voorheen
+            selectors = ['h3.ret-o-card__headline', '.ret-o-product-tile__title', 'h3']
+            for selector in selectors:
+                for el in soup.select(selector):
+                    text = el.get_text(strip=True)
+                    if len(text) > 5 and "Lidl" not in text:
+                        products.append(text)
+                        
+        except Exception as e:
+            print(f"Waarschuwing tijdens browser-sessie: {e}")
+            # We proberen alsnog de producten te pakken die er wél al staan
+            content = page.content()
+            soup = BeautifulSoup(content, 'html.parser')
+            for el in soup.select('h3'):
+                products.append(el.get_text(strip=True))
         
         browser.close()
     
     return list(set(products))
-
 # --- EXECUTIE ---
 if __name__ == "__main__":
     # We richten ons direct op de hoofdpagina van de aanbiedingen
