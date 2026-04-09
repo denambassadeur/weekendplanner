@@ -5,16 +5,11 @@ import google.genai as genai
 from datetime import datetime
 
 # --- 1. CONFIGURATIE ---
-# We gebruiken hier een heel specifieke naam om verwarring te voorkomen
-MIJN_CHEF_INSTRUCTIES = """
-Jij bent mijn persoonlijke culinaire assistent. 
-Focus op: groenten, fruit, vlees, vis en zuivel.
-Maak een aantrekkelijk weekendmenu (lunch en diner) op basis van de Lidl-promoties.
-Help gebruikers bij het ontdekken van unieke en cultureel rijke recepten van over de hele wereld.
-Focus op typische lokale gerechten, historische recepten, gerechten met een bijzonder verhaal en gerechten die bij speciale gelegenheden worden geserveerd.
-Zorg ervoor dat de suggesties passen binnen de thema's: lokaal, historisch, verhalend of feestelijk.
-Geef voor elk gerecht een korte beschrijving van de oorsprong, het bijbehorende verhaal of de gelegenheid waarbij het gegeten wordt.
-Presenteer het resultaat in nette HTML met titels (<h2>) en lijstjes (<ul>).
+INSTRUCTIES = """
+Jij bent mijn persoonlijke chef. 
+Zelfs als de lijst met producten rommelig is, probeer je er eetbare zaken uit te vissen.
+Als je echt niets eetbaars vindt, leg dan kort uit wat voor soort tekst je wél hebt ontvangen (bijv. "Ik zie alleen menu-items zoals 'Jobs' en 'Contact'").
+Antwoord in HTML.
 """
 
 API_KEY = os.environ.get("GEMINI_API_KEY")
@@ -24,121 +19,101 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
-BASE_URL = "https://www.lidl.be"
-OFFERS_URL = "https://www.lidl.be/c/nl-BE/aanbiedingen/s10006730"
-
 # --- 2. FUNCTIES ---
 
 def get_links():
-    print("Zoeken naar Lidl links...")
+    offers_url = "https://www.lidl.be/c/nl-BE/aanbiedingen/s10006730"
+    print("Zoeken naar actuele links op Lidl.be...")
     try:
-        r = requests.get(OFFERS_URL, headers=HEADERS, timeout=15)
+        r = requests.get(offers_url, headers=HEADERS, timeout=15)
         soup = BeautifulSoup(r.text, 'html.parser')
         links = {"week": None, "weekend": None}
         for a in soup.find_all('a', href=True):
             h = a['href']
             if "aanbiedingen-deze-week" in h and not links["week"]:
-                links["week"] = BASE_URL + h if h.startswith('/') else h
+                links["week"] = "https://www.lidl.be" + h if h.startswith('/') else h
             if "weekenddeals" in h and not links["weekend"]:
-                links["weekend"] = BASE_URL + h if h.startswith('/') else h
+                links["weekend"] = "https://www.lidl.be" + h if h.startswith('/') else h
         return links
-    except Exception as e:
-        print(f"Link fout: {e}")
+    except:
         return {}
 
 def scrape_products(url):
     if not url: return ""
-    print(f"Data ophalen van: {url}")
+    print(f"Scrapen van: {url}")
     items = []
     try:
         r = requests.get(url, headers=HEADERS, timeout=15)
         soup = BeautifulSoup(r.text, 'html.parser')
-        
-        # We pakken ALLES wat een titel of productnaam zou kunnen zijn
-        # zonder ons zorgen te maken over specifieke 'article' tags.
+        # We pakken alles wat tekst is in koppen en sterke tags
         for tag in soup.find_all(['h2', 'h3', 'strong', 'span']):
             text = tag.get_text(strip=True)
-            # We filteren alleen op lengte: productnamen zijn meestal tussen 5 en 50 tekens
-            if 5 < len(text) < 55:
+            if 4 < len(text) < 50:
                 items.append(text)
-        
-        unique_items = list(set(items))
-        print(f"Rauwe items gevonden: {len(unique_items)}")
-        return "\n".join(unique_items)
-    except Exception as e:
-        print(f"Scrape fout: {e}")
-        return ""
+        return list(set(items))
+    except:
+        return []
 
-def ask_gemini(promo_data):
-    print("Gemini filtert de data...")
-    # We vertellen Gemini expliciet dat de lijst 'vervuild' is.
-    prompt = f"""
-    Ik heb een lijst met tekst van de Lidl website. Er zit veel troep tussen (menu-items, non-food, etc.).
+def ask_gemini(data_list):
+    print("Gemini analyseert de data...")
+    # We maken een tekstblok van de eerste 100 items om te besparen op tokens
+    raw_text = "\n".join(data_list[:100])
     
-    JOUW TAAK:
-    1. Filter uit de onderstaande lijst ALLEEN de echte voedingsmiddelen (groenten, fruit, vlees, vis, zuivel).
-    2. Negeer zaken als 'Tuinieren', 'Moestuin', 'Service', etc.
-    3. Maak met de GEVONDEN ingrediënten een weekendplanning (2x lunch, 2x diner).
-    4. Belangrijk: Start je antwoord met een lijstje: "In de aanbieding bij Lidl gezien: [ingrediënt 1, ingrediënt 2, ...]".
-    5. Werk de recepten uit in HTML.
+    prompt = f"""
+    Hier is de data van de Lidl website:
+    {raw_text}
 
-    LIJST OM TE FILTEREN:
-    {promo_data}
+    OPDRACHT:
+    1. Zoek naar promoties van eten of drinken.
+    2. Als je ze vindt: maak een weekendplanning met recepten (HTML).
+    3. Als je GEEN eten vindt: vertel me wat voor soort informatie je wel ziet in de lijst.
     """
     
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash", 
+            model="gemini-2.0-flash", 
             contents=prompt,
-            config={'system_instruction': MIJN_CHEF_INSTRUCTIES}
+            config={'system_instruction': INSTRUCTIES}
         )
         return response.text
     except Exception as e:
-        return f"Gemini kon de data niet verwerken: {e}"
-# --- 3. UITVOERING ---
+        return f"Gemini Fout: {e}"
+
+# --- 3. EXECUTIE ---
 
 if __name__ == "__main__":
     urls = get_links()
     
-    # Producten ophalen
-    data_week = scrape_products(urls.get("week"))
-    data_weekend = scrape_products(urls.get("weekend"))
-    totaal_tekst = data_week + "\n" + data_weekend
+    items_week = scrape_products(urls.get("week"))
+    items_weekend = scrape_products(urls.get("weekend"))
+    totaal_items = items_week + items_weekend
     
-    print(f"Klaar met scrapen. Lengte data: {len(totaal_tekst)}")
+    # DEBUG: Print de eerste 15 items in de GitHub logs
+    print(f"DEBUG - Totaal items gevonden: {len(totaal_items)}")
+    print(f"DEBUG - Eerste 15 items: {totaal_items[:15]}")
 
-    if len(totaal_tekst.strip()) > 10:
-        inhoud_voor_site = ask_gemini(totaal_tekst)
+    if len(totaal_items) > 5:
+        inhoud = ask_gemini(totaal_items)
     else:
-        inhoud_voor_site = "Kon helaas geen promoties vinden op de Lidl website. Probeer het later nog eens."
+        inhoud = "De scraper vond te weinig tekst op de pagina. Waarschijnlijk blokkeert Lidl de toegang voor bots."
 
     nu = datetime.now().strftime("%d-%m-%Y %H:%M")
     
-    # De uiteindelijke HTML pagina
-    html_template = f"""
+    html_output = f"""
     <html>
-    <head>
-        <title>Weekend Planner</title>
-        <style>
-            body {{ font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; background-color: #f8f9fa; }}
-            .container {{ border: 1px solid #ddd; padding: 30px; border-radius: 12px; background-color: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }}
-            h1 {{ color: #0050aa; text-align: center; border-bottom: 2px solid #0050aa; padding-bottom: 10px; }}
-            h2 {{ color: #d32f2f; }}
-            .timestamp {{ text-align: center; font-size: 0.8em; color: #999; margin-top: 20px; }}
-        </style>
+    <head><title>Weekend Planner</title>
+    <style>body{{font-family:sans-serif; max-width:800px; margin:40px auto; padding:20px; background:#f4f7f6;}}
+    .card{{background:white; padding:30px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1);}}</style>
     </head>
     <body>
-        <div class="container">
+        <div class="card">
             <h1>🍴 Mijn Weekend Planner</h1>
-            <div id="content">
-                {inhoud_voor_site}
-            </div>
+            {inhoud}
         </div>
-        <p class="timestamp">Laatste update: {nu} (Belgische tijd)</p>
+        <p style="text-align:center; color:grey;">Laatste update: {nu}</p>
     </body>
     </html>
     """
     
     with open("index.html", "w", encoding="utf-8") as f:
-        f.write(html_template)
-    print("Succesvol afgerond!")
+        f.write(html_output)
