@@ -21,7 +21,8 @@ jobs:
 
     - name: Installeer afhankelijkheden
       run: |
-        pip install google-generativeai requests beautifulsoup4
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4 google-genai
 
     - name: Draai het Planner Script
       env:
