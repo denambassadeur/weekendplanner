@@ -66,7 +66,7 @@ def ask_gemini(promo_data):
     try:
         # Hier gebruiken we EXACT dezelfde naam: MIJN_CHEF_INSTRUCTIES
         response = client.models.generate_content(
-            model="gemini-3-flash-preview",
+            model="gemini-3.1-pro-preview",
             contents=f"Hier zijn de promoties: {promo_data}. Maak mijn plan.",
             config={
                 'system_instruction': MIJN_CHEF_INSTRUCTIES
