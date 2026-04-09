@@ -48,50 +48,45 @@ def get_links():
 
 def scrape_products(url):
     if not url: return ""
-    print(f"Scherp scrapen van: {url}")
+    print(f"Data ophalen van: {url}")
     items = []
     try:
         r = requests.get(url, headers=HEADERS, timeout=15)
         soup = BeautifulSoup(r.text, 'html.parser')
         
-        # We zoeken specifiek naar de producttitels van Lidl
-        # Deze zitten vaak in h3 of h2 binnen een 'article' of kaart
-        for card in soup.find_all(['article', 'div'], class_=lambda x: x and ('product' in x or 'card' in x)):
-            title_element = card.find(['h2', 'h3', 'h4'])
-            if title_element:
-                title = title_element.get_text(strip=True)
-                # Filter: we negeren algemene termen en non-food
-                negatievelijst = ['tuin', 'moestuin', 'plant', 'gereedschap', 'lidl', 'folder', 'keuken']
-                if len(title) > 3 and not any(woord in title.lower() for woord in negatievelijst):
-                    items.append(title)
+        # We pakken ALLES wat een titel of productnaam zou kunnen zijn
+        # zonder ons zorgen te maken over specifieke 'article' tags.
+        for tag in soup.find_all(['h2', 'h3', 'strong', 'span']):
+            text = tag.get_text(strip=True)
+            # We filteren alleen op lengte: productnamen zijn meestal tussen 5 en 50 tekens
+            if 5 < len(text) < 55:
+                items.append(text)
         
         unique_items = list(set(items))
-        print(f"Echte ingrediënten gevonden: {len(unique_items)}")
-        if unique_items:
-            print(f"Eerste 5 gevonden: {unique_items[:5]}")
+        print(f"Rauwe items gevonden: {len(unique_items)}")
         return "\n".join(unique_items)
     except Exception as e:
-        print(f"Fout: {e}")
+        print(f"Scrape fout: {e}")
         return ""
 
 def ask_gemini(promo_data):
-    print("Gemini wordt streng toegesproken...")
+    print("Gemini filtert de data...")
+    # We vertellen Gemini expliciet dat de lijst 'vervuild' is.
     prompt = f"""
-    Ik geef je hieronder een lijst met tekst die ik heb gescrapt van de Lidl-website.
+    Ik heb een lijst met tekst van de Lidl website. Er zit veel troep tussen (menu-items, non-food, etc.).
     
-    LIJST:
+    JOUW TAAK:
+    1. Filter uit de onderstaande lijst ALLEEN de echte voedingsmiddelen (groenten, fruit, vlees, vis, zuivel).
+    2. Negeer zaken als 'Tuinieren', 'Moestuin', 'Service', etc.
+    3. Maak met de GEVONDEN ingrediënten een weekendplanning (2x lunch, 2x diner).
+    4. Belangrijk: Start je antwoord met een lijstje: "In de aanbieding bij Lidl gezien: [ingrediënt 1, ingrediënt 2, ...]".
+    5. Werk de recepten uit in HTML.
+
+    LIJST OM TE FILTEREN:
     {promo_data}
-    
-    STRENGE OPDRACHT:
-    1. Scan de lijst en extraheer ALLEEN de eetbare ingrediënten (vlees, vis, groenten, fruit, zuivel).
-    2. Negeer woorden als 'Tuinieren', 'Moestuin' of 'Non-food'.
-    3. Maak een weekendplanning. Gebruik voor ELK gerecht minstens één specifiek product uit de lijst.
-    4. Start je antwoord met een sectie: "Gevonden promoties die ik vandaag gebruik:" en som ze op.
-    5. Werk alles uit in mooie HTML.
     """
     
     try:
-        # Gebruik hier je fallback-systeem van de vorige stap
         response = client.models.generate_content(
             model="gemini-2.5-flash", 
             contents=prompt,
@@ -99,7 +94,7 @@ def ask_gemini(promo_data):
         )
         return response.text
     except Exception as e:
-        return f"Gemini error: {e}"
+        return f"Gemini kon de data niet verwerken: {e}"
 # --- 3. UITVOERING ---
 
 if __name__ == "__main__":
