@@ -61,7 +61,7 @@ if __name__ == "__main__":
     
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash", # Of gebruik gemini-1.5-flash voor snelheid
+            model="gemini-2.5-pro", # Of gebruik gemini-1.5-flash voor snelheid
             contents=f"Data:\n{prompt_data}\n\nMaak mijn weekendplan.",
             config={'system_instruction': instructies}
         )
