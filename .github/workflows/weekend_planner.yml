@@ -2,9 +2,8 @@ name: Wekelijkse Weekend Planner
 
 on:
   schedule:
-    # Dit draait elke donderdag om 08:00 UTC (09:00 of 10:00 Belgische tijd)
     - cron: '0 8 * * 4'
-  workflow_dispatch: # Hiermee kun je het proces ook handmatig starten
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,10 +11,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4 # Geüpdatet van v3 naar v4
 
     - name: Stel Python in
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5 # Geüpdatet van v4 naar v5
       with:
         python-version: '3.11'
 
@@ -27,8 +26,7 @@ jobs:
     - name: Draai het Planner Script
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        # Voeg hier later je Google Calendar credentials toe
-        SCRAPINGBEE_API_KEY: ${{ secrets.SCRAPINGBEE_API_KEY }}
+        SCRAPINGBEE_API_KEY: ${{ secrets.SCRAPINGBEE_API_KEY }} # Cruciaal!
       run: python scraper.py
 
     - name: Update de Website (GitHub Pages)
@@ -36,5 +34,5 @@ jobs:
         git config --global user.name "GitHub Action"
         git config --global user.email "action@github.com"
         git add index.html
-        git commit -m "Update weekend planning: $(date)"
+        git commit -m "Update weekend planning: $(date)" || echo "Geen wijzigingen om te commiten"
         git push
