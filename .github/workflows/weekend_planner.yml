@@ -28,6 +28,7 @@ jobs:
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         # Voeg hier later je Google Calendar credentials toe
+        SCRAPINGBEE_API_KEY: ${{ secrets.SCRAPINGBEE_API_KEY }}
       run: python scraper.py
 
     - name: Update de Website (GitHub Pages)
