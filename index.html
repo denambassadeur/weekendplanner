@@ -1,6 +1,6 @@
-<html><body style='font-family:sans-serif; max-width:800px; margin:auto; padding:20px; line-height:1.6;'><h1>🍴 Weekend Planner</h1><div style='background:white; border:1px solid #ddd; padding:20px; border-radius:12px;'>Absoluut! Als uw topchef heb ik met de grootste zorg en creativiteit een exquise weekendmenu samengesteld, perfect afgestemd op de inspiratie die u mij gaf. Ik heb de nadruk gelegd op verse seizoensproducten, verleidelijke promoties en onze geliefde klassiekers, allemaal bereid met een diepe passie voor smaak en kwaliteit.
+<html><body style='font-family:sans-serif; max-width:800px; margin:auto; padding:20px; line-height:1.6;'><h1>🍴 Weekend Planner</h1><div style='background:white; border:1px solid #ddd; padding:20px; border-radius:12px;'>Absoluut! Als uw persoonlijke topchef heb ik uw input met veel plezier vertaald naar een overheerlijk weekendmenu. De hint van 'Alpenfest', de focus op 'Vlees & Vis' en 'Groenten & Fruit', aangevuld met de ambachtelijkheid van de 'Bakkerij' en de suggestie van 'In prijs verlaagd' seizoensproducten, hebben mijn culinaire fantasie geprikkeld.
 
-Hier is uw culinaire weekendplan, gepresenteerd in een stijlvolle HTML-opmaak:
+Hier is uw exclusieve weekendplan, geserveerd in HTML:
 
 ```html
 <!DOCTYPE html>
@@ -8,202 +8,133 @@ Hier is uw culinaire weekendplan, gepresenteerd in een stijlvolle HTML-opmaak:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uw Exclusieve Weekendmenu – Geselecteerd door de Chef</title>
+    <title>Uw Exclusieve Weekendmenu - Samengesteld door de Chef</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Georgia&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Georgia', serif;
-            line-height: 1.6;
+            line-height: 1.8;
             color: #333;
             background-color: #fcf8f3;
-            margin: 0;
-            padding: 20px;
+            margin: 40px;
         }
-        .menu-container {
+        .container {
             max-width: 900px;
-            margin: 30px auto;
-            background-color: #fff;
+            margin: auto;
+            background: #fff;
+            padding: 30px 50px;
             border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            padding: 40px;
-            border-top: 5px solid #a0522d;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         h1 {
-            font-family: 'Playfair Display', serif; /* Een eleganter lettertype voor titels */
-            font-size: 3em;
-            color: #a0522d;
+            color: #8B0000; /* Deep Red */
             text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
             margin-bottom: 30px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            border-bottom: 2px solid #8B0000;
+            padding-bottom: 15px;
         }
         h2 {
+            color: #A0522D; /* Sienna */
             font-family: 'Playfair Display', serif;
-            font-size: 2.2em;
-            color: #5a2e1e;
-            border-bottom: 2px solid #e0c2a7;
-            padding-bottom: 10px;
+            font-size: 2em;
             margin-top: 40px;
-            text-align: center;
+            border-bottom: 1px solid #A0522D;
+            padding-bottom: 10px;
         }
         h3 {
+            color: #4B0082; /* Indigo */
             font-family: 'Playfair Display', serif;
-            font-size: 1.8em;
-            color: #7d4427;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            border-left: 5px solid #e0c2a7;
-            padding-left: 10px;
+            font-size: 1.5em;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 1em;
         }
         ul {
             list-style-type: none;
             padding: 0;
-            margin-bottom: 30px;
         }
         li {
-            margin-bottom: 15px;
+            margin-bottom: 1em;
             padding-left: 20px;
             position: relative;
         }
         li::before {
-            content: '•';
-            color: #a0522d;
-            font-weight: bold;
-            display: inline-block;
-            width: 1em;
-            margin-left: -1em;
-        }
-        .dish-name {
-            font-weight: bold;
-            color: #5a2e1e;
-            font-size: 1.1em;
-        }
-        .description {
-            font-style: italic;
-            color: #666;
-            margin-left: 5px;
+            content: "🍽️ "; /* Dining emoji for bullet points */
+            position: absolute;
+            left: 0;
+            color: #8B0000;
         }
         .special {
-            color: #d9534f; /* Rood voor speciale aanbiedingen */
-            font-weight: bold;
-        }
-        .promo {
-            color: #5cb85c; /* Groen voor promoties/goede prijs */
-            font-weight: bold;
-        }
-        .bakery-item {
-            color: #8B4513; /* Bruin voor bakkerijproducten */
-        }
-        .fresh-produce {
-            color: #28a745; /* Groen voor verse producten */
-        }
-        .chef-note {
             font-style: italic;
-            color: #888;
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-left: 3px solid #a0522d;
+            color: #D2691E; /* Chocolate */
+            font-weight: bold;
+        }
+        .intro, .outro {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .outro {
+            margin-top: 40px;
+            border-top: 1px dashed #ccc;
+            padding-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="menu-container">
-        <h1>Uw Exclusieve Weekendmenu – Geselecteerd door de Chef</h1>
-        <p class="chef-note">
-            <em>"Welkom, fijnproever! Dit weekend heb ik een menu samengesteld dat perfect inspeelt op uw wensen. Van de beste seizoensproducten tot onweerstaanbare promoties en onze vaste klassiekers – alles is zorgvuldig gekozen om uw zintuigen te prikkelen. Geniet van een culinaire reis vol verrassingen en vertrouwde smaken."</em>
-        </p>
+    <div class="container">
+        <h1>Uw Exclusieve Weekendmenu</h1>
+        <p class="intro"><em>Geachte fijnproever,</em></p>
+        <p class="intro">Als topchef heb ik mij met passie en toewijding gebogen over uw input. Het 'Alpenfest' thema, gecombineerd met de focus op <span class="special">'Vlees & Vis'</span>, <span class="special">'Groenten & Fruit'</span> en de verfijnde <span class="special">'Bakkerij'</span>, heeft mij geïnspireerd tot een culinaire reis die uw zintuigen zal prikkelen. Ik presenteer u een weekend vol smaakvolle verrassingen, waar seizoensproducten en ambachtelijkheid centraal staan.</p>
 
-        <h2>Zaterdag: De Culinair Genieter</h2>
-
-        <h3>Brunch (10:00 - 14:00)</h3>
+        <h2>Vrijdagavond: Een Frisse Start met Alpijnse Elegantie</h2>
+        <h3>Hoofdgerecht: Geroosterde Forelfilet met Alpenkruidenkorst</h3>
         <ul>
-            <li>
-                <span class="dish-name bakery-item">Ambachtelijk Bakkerijmandje</span>
-                <span class="description"><em>Een selectie van versgebakken croissants, knapperige broodjes en luxe pistolets, geserveerd met huisgemaakte jams en romige boter. Een heerlijk begin van uw dag! (<a href="#">Promo's op ons vaste assortiment</a>)</em></span>
-            </li>
-            <li>
-                <span class="dish-name fresh-produce">Seizoensfruit & Griekse Yoghurt</span>
-                <span class="description"><em>Een verfrissende mix van het beste <span class="fresh-produce">seizoensfruit</span>, geserveerd met romige Griekse yoghurt, knapperige granola en een drizzle van lokale honing.</em></span>
-            </li>
-            <li>
-                <span class="dish-name promo">Klassieke Eggs Benedict</span>
-                <span class="description"><em>Getoaste brioche belegd met licht gerookte ham, perfect gepocheerde eieren en onze fluweelzachte Hollandaise saus. Een ware brunchklassieker uit ons <span class="promo">vaste assortiment</span>, nu <span class="promo">in prijs verlaagd</span>!</em></span>
-            </li>
-            <li>
-                <span class="dish-name">Gerookte Zalm Platter</span>
-                <span class="description"><em>Fijne plakjes koudgerookte zalm, prachtig gepresenteerd, met kappertjes, rode ui en een vleugje citroen. Een lichte en elegante keuze uit onze <span class="dish-name">vlees & vis</span> selectie.</em></span>
-            </li>
+            <li>Een delicate filet van <span class="special">verse forel</span>, subtiel gegaard en voorzien van een aromatische korst van fijngehakte alpenkruiden (geïnspireerd op 'Bloemen & Planten').</li>
+            <li>Geserveerd met een lentebloemige salade van jonge spinazie, radijs en komkommer, afgewerkt met een lichte citroen-dille dressing.</li>
+            <li>Een perfecte, lichte opener van uw weekend.</li>
         </ul>
 
-        <h3>Diner (vanaf 18:00)</h3>
+        <h2>Zaterdagmiddag: Hartig Genieten à la Alpenfest</h2>
+        <h3>Hoofdgerecht: Authentieke Zwitserse Kaasfondue</h3>
         <ul>
-            <li>
-                <span class="dish-name">Amuse-bouche van de Chef</span>
-                <span class="description"><em>Een klein, verrassend hapje om uw smaakpapillen te openen.</em></span>
-            </li>
-            <li>
-                <span class="dish-name promo">Voorgerecht: Carpaccio van Ossenhaas</span>
-                <span class="description"><em>Flinterdunne plakjes ossenhaas, geserveerd met onze signatuur truffelmayonaise, Parmezaanse kaas en verse rucola. Een favoriet uit ons <span class="promo">vaste assortiment</span>, nu extra aantrekkelijk <span class="promo">(in prijs verlaagd)</span>.</em></span>
-            </li>
-            <li>
-                <span class="dish-name special">Hoofdgerecht: De Specialiteit van de Week – Langzaam Gegaarde Buikspek met Pompoenpuree</span>
-                <span class="description"><em><span class="special">Enkel deze week te koop!</span> Perfect langzaam gegaard buikspek, krokant aan de buitenkant, sappig vanbinnen, geserveerd met een romige puree van geroosterde pompoen en een confituur van rode ui en appel. De presentatie is geïnspireerd door de rijke kleuren van <span class="fresh-produce">bloemen & planten</span>.</em></span>
-            </li>
-            <li>
-                <span class="dish-name">Visalternatief: Gegrilde Zeebaarsfilet</span>
-                <span class="description"><em>Licht gegrilde zeebaarsfilet, geserveerd met een frisse risotto van citroen en groene asperges, afgemaakt met een saus van venkel en dille, perfect in balans met <span class="fresh-produce">onze verse groenten & fruit</span>.</em></span>
-            </li>
-            <li>
-                <span class="dish-name bakery-item">Nagerecht: Tarte Tatin met Vanille-ijs</span>
-                <span class="description"><em>Een klassieke, gekarameliseerde appeltaart geserveerd met ambachtelijk vanille-ijs en een vleugje gezouten karamelsaus. Vers uit onze eigen <span class="bakery-item">bakkerij</span>.</em></span>
-            </li>
+            <li>Een romige fondue van zorgvuldig geselecteerde <span class="special">Zwitserse kazen</span>, gesmolten tot perfectie met een vleugje Kirsch en witte wijn.</li>
+            <li>Begeleid door een royaal assortiment van dippers: ambachtelijk zuurdesembrood van onze <span class="special">'Bakkerij'</span>, kleine gekookte aardappeltjes in de schil, knapperige augurkjes en zilveruitjes (alles vers van <span class="special">'Groenten & Fruit'</span>).</li>
+            <li>Een gezellige en smaakvolle ode aan de bergen, geheel in de geest van <span class="special">Alpenfest</span>.</li>
         </ul>
 
-        <h2>Zondag: De Ontspannen Afsluiter</h2>
-
-        <h3>Luxe Brunch (10:00 - 14:00)</h3>
+        <h2>Zaterdagavond: Het Culinair Hoogtepunt – Robuust & Verfijnd</h2>
+        <h3>Hoofdgerecht: Langzaam Gegaarde Hertenstoofpot "Alpenpracht"</h3>
         <ul>
-            <li>
-                <span class="dish-name bakery-item">American Pancakes met Seizoensfruit</span>
-                <span class="description"><em>Luchtige American Pancakes, rijkelijk belegd met verse bosbessen en aardbeien, overgoten met pure ahornsiroop. Een zoete verwennerij uit onze <span class="bakery-item">bakkerij</span>.</em></span>
-            </li>
-            <li>
-                <span class="dish-name fresh-produce">Frisse Fruitsalade met Munt</span>
-                <span class="description"><em>Een kleurrijke selectie van vers gesneden <span class="fresh-produce">fruit</span>, verrijkt met een vleugje verse munt.</em></span>
-            </li>
-            <li>
-                <span class="dish-name">Charcuterie & Kaas Plateau</span>
-                <span class="description"><em>Een zorgvuldig samengesteld plateau met fijne gedroogde hammen, ambachtelijke worsten en een selectie van lokale kazen, vergezeld van vijgenbrood en noten. Perfect voor liefhebbers van <span class="dish-name">vlees</span>.</em></span>
-            </li>
-            <li>
-                <span class="dish-name">Gerookte Forel Salade met Krokante Kappertjes</span>
-                <span class="description"><em>Licht gerookte forel, vermengd met een frisse mayonaise en krokante kappertjes, geserveerd op een bedje van veldsla. Een heerlijke <span class="dish-name">vis</span> optie.</em></span>
-            </li>
+            <li>Malse stukken <span class="special">hertenvlees</span>, urenlang gesudderd in een rijke bouillon met wilde paddenstoelen, sjalotten en jeneverbessen. Een ware smaakexplosie die doet denken aan de ongerepte natuur. (Focus op <span class="special">'Vlees'</span>)</li>
+            <li>Geserveerd met een fluweelzachte aardappelgratin, verrijkt met Gruyèrekaas, en jonge, gestoomde groene asperges. (<span class="special">'Groenten & Fruit'</span>)</li>
+            <li>Een imposant gerecht dat het <span class="special">'Alpenfest'</span> volledig tot zijn recht laat komen, wellicht <span class="special">"In prijs verlaagd"</span> als seizoensspecial deze week.</li>
         </ul>
 
-        <h3>Diner (vanaf 17:00)</h3>
+        <h2>Zondagochtend: Royale Alpenbrunch</h2>
+        <h3>Assortiment: De Bakkerij & Lokale Delicatessen</h3>
         <ul>
-            <li>
-                <span class="dish-name promo">Voorgerecht: Romige Wildbouillon</span>
-                <span class="description"><em>Een hartverwarmende, rijke bouillon met fijne kruiden en een vleugje sherry. Een geliefde klassieker uit ons <span class="promo">vaste assortiment</span>, nu met <span class="promo">promo</span> prijsvoordeel.</em></span>
-            </li>
-            <li>
-                <span class="dish-name">Hoofdgerecht: Malse Lamsbout uit de Oven</span>
-                <span class="description"><em>Een perfect gebraden lamsbout, gemarineerd met verse rozemarijn en knoflook, geserveerd met goudbruine rozemarijnaardappelen en een harmonieuze melange van <span class="fresh-produce">geroosterde seizoensgroenten</span>. Een robuuste keuze voor <span class="dish-name">vlees</span>liefhebbers.</em></span>
-            </li>
-            <li>
-                <span class="dish-name promo">Visalternatief: Kabeljauwfilet met Hollandse Garnalen</span>
-                <span class="description"><em>Sappige kabeljauwfilet, zacht gegaard en geserveerd met een romige aardappelpuree, overgoten met een delicate botersaus en rijkelijk bestrooid met Hollandse garnalen. Nu met <span class="promo">tijdelijke prijsvoordeel</span>! Een prachtige <span class="dish-name">vis</span>gerecht.</em></span>
-            </li>
-            <li>
-                <span class="dish-name fresh-produce">Vegetarisch: Gevulde Aubergine met Mediterrane Kruiden</span>
-                <span class="description"><em>Halve aubergine gevuld met een smaakvolle mix van quinoa, feta, zongedroogde tomaten en een scala aan verse Mediterrane kruiden, gegratineerd in de oven. Een ode aan <span class="fresh-produce">Groenten & Fruit</span>!</em></span>
-            </li>
-            <li>
-                <span class="dish-name bakery-item">Nagerecht: Chocolade Lava Cake</span>
-                <span class="description"><em>Een intens rijke chocoladecake met een vloeibare kern, geserveerd met een frisse frambozencoulis en een vleugje munt uit onze kruidentuin (geïnspireerd door <span class="fresh-produce">Bloemen & Planten</span>). Vers uit onze <span class="bakery-item">bakkerij</span>.</em></span>
-            </li>
+            <li>Een uitgebreide selectie van versgebakken broodjes, knapperige croissants en zoete lekkernijen, rechtstreeks uit onze <span class="special">'Bakkerij'</span>.</li>
+            <li>Diverse streekkazen en vleeswaren, waaronder fijne <span class="special">gerookte ham</span>. (<span class="special">'Vlees'</span>)</li>
+            <li>Huisgemaakte jams van seizoensfruit (<span class="special">'Groenten & Fruit'</span>), lokale honing en een schaal met vers fruit.</li>
+            <li>Perfect gekookte eieren, roerei met verse bieslook (van de <span class="special">'Bloemen & Planten'</span>), en verfrissende dranken.</li>
         </ul>
+
+        <h2>Zondagmiddag: Een Lichte en Elegante Afsluiting</h2>
+        <h3>Hoofdgerecht: Salade van Gerookte Eendenborst met Vijgen & Walnoten</h3>
+        <ul>
+            <li>Mals <span class="special">gerookte eendenborstfilet</span>, in fijne plakjes gesneden, geserveerd op een bedje van gemengde sla. (<span class="special">'Vlees'</span>)</li>
+            <li>Verrijkt met zoete verse vijgen, knapperige walnoten, zachte geitenkaas en een verfijnde balsamico-honingdressing. (<span class="special">'Groenten & Fruit'</span>)</li>
+            <li>Begeleid door een luchtige focaccia met rozemarijn en zeezout, vers van de <span class="special">'Bakkerij'</span>.</li>
+            <li>Een lichte, doch smaakvolle finale van uw culinaire weekend.</li>
+        </ul>
+
+        <p class="outro">Ik hoop van harte dat dit menu uw weekend onvergetelijk zal maken. Eet smakelijk en geniet van elk moment!</p>
+        <p class="outro"><em>Met culinaire groeten,<br>Uw Chef</em></p>
     </div>
 </body>
 </html>
-```</div><p style='color:grey; font-size:0.8em; margin-top:20px;'>Laatste update: 14-05-2026 16:18</p></body></html>
+```</div><p style='color:grey; font-size:0.8em; margin-top:20px;'>Laatste update: 21-05-2026 11:18</p></body></html>
