@@ -1,4 +1,6 @@
-<html><body style='font-family:sans-serif; max-width:800px; margin:auto; padding:20px; line-height:1.6;'><h1>🍴 Weekend Planner</h1><div style='background:white; border:1px solid #ddd; padding:20px; border-radius:12px;'>Als topchef presenteer ik u met trots een weekendmenu, zorgvuldig samengesteld op basis van de ingevoerde ingrediënten en inspiraties. Een culinaire reis die de zintuigen prikkelt en elk moment van uw weekend bijzonder maakt.
+<html><body style='font-family:sans-serif; max-width:800px; margin:auto; padding:20px; line-height:1.6;'><h1>🍴 Weekend Planner</h1><div style='background:white; border:1px solid #ddd; padding:20px; border-radius:12px;'>Mijn beste culinaire avonturier,
+
+Wat een prachtige uitdaging! Het 'Food Festival' en de suggestie van 'Enkel deze week te koop' inspireren me tot een menu dat de zintuigen prikkelt, met een knipoog naar comfort en de verfijning van verse seizoensproducten. 'MCENNEDY' zal ik interpreteren als een uitnodiging om een klassieker met een robuust karakter naar een hoger niveau te tillen. Hier is uw exclusieve weekendplan, gepresenteerd met de zorg en passie van een topchef:
 
 ```html
 <!DOCTYPE html>
@@ -6,86 +8,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekendmenu van de Chef</title>
+    <title>Uw Exclusieve Weekendmenu - Chef's Special</title>
     <style>
-        body { font-family: 'Georgia', serif; line-height: 1.6; color: #333; margin: 20px; background-color: #f9f9f9; }
-        .container { max-width: 900px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-        h1, h2, h3, h4 { color: #8B4513; font-weight: normal; margin-top: 25px; }
-        h1 { font-size: 2.5em; text-align: center; border-bottom: 2px solid #8B4513; padding-bottom: 15px; margin-bottom: 30px; }
-        h2 { font-size: 1.8em; border-bottom: 1px dashed #A0522D; padding-bottom: 5px; }
-        h3 { font-size: 1.4em; color: #A0522D; margin-top: 20px; }
-        h4 { font-size: 1.2em; color: #CD853F; margin-top: 15px; }
-        p { margin-bottom: 10px; }
-        ul { list-style-type: none; padding: 0; }
-        ul li { background: #fdfae6; margin-bottom: 8px; padding: 10px 15px; border-left: 5px solid #D2B48C; border-radius: 3px; }
-        .intro { font-style: italic; text-align: center; margin-bottom: 40px; color: #555; }
-        .note { font-size: 0.9em; color: #777; margin-top: 30px; text-align: right; border-top: 1px solid #eee; padding-top: 10px; }
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+            color: #8B4513; /* A warm, inviting brown */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 2.8em;
+            border-bottom: 2px solid #D2B48C;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            font-size: 2.2em;
+            color: #5A2D0C;
+            margin-top: 40px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #E0C7AC;
+        }
+        h3 {
+            font-size: 1.8em;
+            color: #A0522D;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .meal-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #fcf8f5;
+            border-left: 5px solid #D2B48C;
+            border-radius: 5px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            margin-bottom: 15px;
+            padding-left: 25px;
+            position: relative;
+            font-size: 1.1em;
+        }
+        li:before {
+            content: '★'; /* A simple star or culinary symbol */
+            color: #DAA520; /* Gold */
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+            top: -2px;
+        }
+        p.intro, p.outro {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+        .chef-note {
+            font-size: 0.9em;
+            color: #777;
+            text-align: right;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #A0522D;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Exclusief Weekendmenu van de Chef</h1>
-        <p class="intro">Een culinaire reis, samengesteld met de meest verse ingrediënten en geïnspireerd op diverse smaken. Elk gerecht is een ode aan de seizoenen en uw welzijn.</p>
+        <h1>Uw Exclusieve Weekendmenu</h1>
+        <p class="intro">Bereid u voor op een culinair festival, samengesteld met de meest verse ingrediënten en een vleugje gastronomische flair. Dit menu viert de <span class="highlight">Groenten & fruit</span>, <span class="highlight">Vlees & vis</span>, en de ambacht van de <span class="highlight">Bakkerij</span>, met speciale aandacht voor wat 'Enkel deze week te koop' is!</p>
 
-        <h2>Vrijdagavond: Fiesta Mexicana</h2>
-        <p>We trappen het weekend af met een levendige en interactieve maaltijd, geïnspireerd op <strong>El Tequito</strong>, perfect om de week af te schudden en de smaakpapillen te wekken.</p>
-        <h3>Hoofdgerecht: Luxe 'Build-Your-Own' Taco Bowls</h3>
-        <ul>
-            <li><strong>Vlees:</strong> Mals gekruid rundergehakt en/of Langzaam gegaarde Pulled Chicken.</li>
-            <li><strong>Vis:</strong> Delicaat gebakken coquilles of gegrilde Black Tiger garnalen, subtiel gekruid met chili en limoen.</li>
-            <li><strong>Groenten & fruit:</strong> Een rijke selectie van verse salsa's (tomaat, rode ui, koriander), pittige pico de gallo, rijpe avocadocrème, knapperige romaine sla, maïssalsa, en gepekelde jalapeños.</li>
-            <li><strong>Bijgerechten:</strong> Zwarte bonen, zilvervliesrijst met limoen en koriander, crème fraîche, en geraspte Mexicaanse kaas.</li>
-        </ul>
-        <h4>Dranksuggestie:</h4>
-        <ul>
-            <li>Klassieke Margarita met verse limoen of een verfrissende Agave-Lime Spritzer.</li>
-        </ul>
+        <h2>ZATERDAG</h2>
+        <div class="meal-section">
+            <h3>Ontbijt / Brunch: De Ochtendmelodie</h3>
+            <ul>
+                <li><span class="highlight">'Oogst van de Dag' Fruitsalade:</span> Een levendige mix van seizoensfruit (denk aan rijpe perziken, sappige frambozen en exotische vijgen) met verse munt en een hint van limoen.</li>
+                <li><span class="highlight">Ambachtelijke Broodselectie van de Bakkerij:</span> Warme croissants, krokante zuurdesembroodjes en ambachtelijk volkorenbrood, geserveerd met huisgemaakte confituren en romige boerenboter.</li>
+                <li><span class="highlight">Eggs Benedict 'Chef's Choice':</span> Perfect gepocheerde eieren op een bedje van verse spinazie en gerookte zalm, afgewerkt met een zijdezachte klassieke Hollandaisesaus en een snufje dille.</li>
+            </ul>
+        </div>
 
-        <h2>Zaterdag: Wereldse Verfijning</h2>
-        <p>Een dag vol contrasten: een lichte, verfijnde lunch gevolgd door een elegant diner met Aziatische invloeden, getekend door <strong>Vitasia</strong>.</p>
+        <div class="meal-section">
+            <h3>Lunch: Mediterrane Frisheid</h3>
+            <ul>
+                <li><span class="highlight">Salade Niçoise 'De Luxe':</span> Een verfijnde versie van de klassieker met perfect aangebakken verse tonijn (enkel deze week van de vismarkt!), knapperige haricots verts, gekonfijte kerstomaten, fijne krielpatatjes en een zachtgekookt biologisch ei. Afgewerkt met een lichte vinaigrette van Kalamata-olijven en kappertjes.</li>
+            </ul>
+        </div>
 
-        <h3>Middag Lunch: Salade Niçoise "Deconstructed" met Bakkerij brood</h3>
-        <ul>
-            <li><strong>Vis:</strong> Perfect gebakken verse tonijn (kort geschroeid) op een bedje van seizoensgroenten.</li>
-            <li><strong>Groenten & fruit:</strong> Knapperige haricots verts, kleine krielaardappelen, zoete cherrytomaten, zwarte olijven, kappertjes, en een zachtgekookt ei. Afgewerkt met een lichte dille-mosterdvinaigrette.</li>
-            <li><strong>Bakkerij:</strong> Geserveerd met versgebakken, robuust zuurdesembrood en smeuïge kruidenboter van onze <strong>Bakkerij</strong>.</li>
-        </ul>
+        <div class="meal-section">
+            <h3>Diner: Het 'Food Festival' Hoogtepunt</h3>
+            <ul>
+                <li><span class="highlight">De "MCENNEDY" Gestoofde Runderwang Burger:</span> Langzaam gegaarde en gesmoorde runderwangen, urenlang gekookt tot botermals, vervolgens geplukt en gemengd met een diepe, rokerige, zelfgemaakte BBQ-saus (geïnspireerd op robuuste Amerikaanse smaken). Geserveerd op een perfect getoaste, ambachtelijke briochebol (vers van de <span class="highlight">Bakkerij</span>), met ingelegde rode ui, jonge veldsla en een crème van gerookte paprika.</li>
+                <li><span class="highlight">Bijgerecht:</span> Knapperige frietjes van zoete aardappel met verse rozemarijn en een huisgemaakte truffelmayonaise.</li>
+            </ul>
+        </div>
 
-        <h3>Avond Diner: Vitasia Gourmand Experience</h3>
-        <h4>Voorgerecht: Tom Kha Kai met een twist</h4>
-        <ul>
-            <li>Een fluweelzachte, lichtpittige Thaise kokossoep met malse kip (<strong>Vlees</strong>) en wilde oesterzwammen (<strong>Groenten</strong>), verrijkt met citroengras en galangal.</li>
-        </ul>
-        <h4>Hoofdgerecht: Gelakte Eendenborst met Oosterse aroma's</h4>
-        <ul>
-            <li><strong>Vlees:</strong> Malse, krokant gebakken eendenborstfilet, gelakt met een huisgemaakte honing-sojasaus (<strong>Vitasia</strong> inspiratie).</li>
-            <li><strong>Groenten & fruit:</strong> Geserveerd met een kleurrijke mix van gewokte paksoi, sugarsnaps, en mini-maïskolven, begeleid door jasmijnrijst.</li>
-        </ul>
-        <h4>Nagerecht: Mango-Kokos Panna Cotta</h4>
-        <ul>
-            <li>Een zijdezachte panna cotta van kokosmelk, getopt met een frisse coulis van rijpe mango (<strong>Groenten & fruit</strong>) en een vleugje limoen.</li>
-        </ul>
+        <h2>ZONDAG</h2>
+        <div class="meal-section">
+            <h3>Ontbijt / Brunch: Zoete Verleiding</h3>
+            <ul>
+                <li><span class="highlight">Fluweelzachte Ricotta Pannenkoekjes:</span> Luchtige pannenkoekjes verrijkt met ricotta, geserveerd met een warme compote van <span class="highlight">seizoensbessen (enkel deze week te koop)</span>, een scheutje pure ahornsiroop en een toefje lichtgezoete slagroom.</li>
+            </ul>
+        </div>
 
-        <h2>Zondag: Luxe Brunch & Lichte Afsluiter</h2>
-        <p>Een relaxte ochtend en middag met focus op verse producten van de <strong>Bakkerij</strong>, <strong>Groenten & fruit</strong> en delicate <strong>Vlees & vis</strong>.</p>
+        <div class="meal-section">
+            <h3>Lunch: Troostende Warmte</h3>
+            <ul>
+                <li><span class="highlight">Rijke Tomaten-Paprika Crèmesoep:</span> Een fluweelzachte soep van geroosterde trostomaten en rode paprika, geaccentueerd met basilicumolie en geserveerd met knapperige croutons van vers <span class="highlight">zuurdesembrood van de Bakkerij</span>.</li>
+            </ul>
+        </div>
 
-        <h3>Brunch Extravaganza</h3>
-        <ul>
-            <li><strong>Bakkerij:</strong> Een uitgebreid assortiment van ovenverse croissants, luxe broodjes, zoete broodjes en ambachtelijk volkorenbrood.</li>
-            <li><strong>Groenten & fruit:</strong> Een rijke seizoensfruitmand met verse bessen, meloen, druiven en passievrucht, vergezeld van verse sappen.</li>
-            <li><strong>Warme gerechten:</strong> Romige roereieren met bieslook, knapperig gebakken spek (<strong>Vlees</strong>) en delicate gerookte zalm (<strong>Vis</strong>).</li>
-            <li><strong>Hartige plank:</strong> Fijne charcuterie (o.a. prosciutto di Parma) en een selectie van Franse en Belgische kazen.</li>
-        </ul>
+        <div class="meal-section">
+            <h3>Diner: Elegante Afsluiting</h3>
+            <ul>
+                <li><span class="highlight">Risotto Verde met Krokante Kabeljauw:</span> Een romige Arborio risotto, prachtig groen gekleurd door een puree van verse spinazie, doperwten en de eerste groene asperges van het seizoen (<span class="highlight">enkel deze week te koop</span>). Afgewerkt met Pecorino Romano en delicate vlokken krokant gebakken kabeljauwfilet (<span class="highlight">Vis</span>). Een lichte, maar toch bevredigende afsluiting van uw culinaire weekend.</li>
+            </ul>
+        </div>
 
-        <h3>Middag Afsluiter: Lichte Sandwich en Patisserie</h3>
-        <ul>
-            <li><strong>Lichte lunch:</strong> Mini-sandwich met gerookte kip (<strong>Vlees</strong>), avocado en rucola op een huisgebakken focaccia van de <strong>Bakkerij</strong>.</li>
-            <li><strong>Zoete toets:</strong> Een selectie van verfijnde macarons en kleine patisserieën van de <strong>Bakkerij</strong>, perfect om het weekend af te ronden.</li>
-            <li><strong>Drank:</strong> Verse muntthee of een lichte, fruitige iced tea.</li>
-        </ul>
-
-        <p class="note">Dit menu is een suggestie en kan worden aangepast aan persoonlijke voorkeuren en dieetwensen. Geniet van uw culinaire weekend!</p>
+        <p class="outro">Geniet van elk moment van dit smaakvolle avontuur. Een weekend om te proeven en te herinneren!</p>
+        <p class="chef-note">Met gastronomische groeten,<br>Uw Chef</p>
     </div>
 </body>
 </html>
-```</div><p style='color:grey; font-size:0.8em; margin-top:20px;'>Laatste update: 18-06-2026 11:48</p></body></html>
+```</div><p style='color:grey; font-size:0.8em; margin-top:20px;'>Laatste update: 25-06-2026 10:38</p></body></html>
